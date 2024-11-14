@@ -65,6 +65,7 @@ Menampilkan 5 data dari dataset data
 ![data-info](assets/data-info.png)
 Dari eksekusi method ```data.info()``` di atas kita dapat melihat bahwa pada dataset ini terdapat 14 kolom.
 
+* Data terdiri dari 33 baris dan 14 kolom
 * Terdapat 8 kolom numerik dengan tipe data int64 yaitu: cellphone_id, internal memory, RAM, main camera, selfie camera, battery size, weight, dan price.
 * Terdapat 2 kolom dengan tipe data float64 yaitu: performance, screen size.
 * Terdapat 1 kolom dengan tipe data object yaitu: release date
@@ -97,6 +98,7 @@ Menampilkan 5 data dari dataset users
 
 Dari eksekusi method ```users.info()``` di atas kita dapat melihat bahwa pada dataset ini terdapat 4 kolom.
 
+* Data memiliki 99 baris dan 4 kolom
 * Terdapat 2 kolom numerik dengan tipe data int64 yaitu: user_id, dan age.
 * Terdapat 2 kolom dengan tipe data object yaitu: gender dan occupation.
 
@@ -118,6 +120,7 @@ Menampilkan 5 data dari dataset rating
 
 Dari eksekusi method rating.info() di atas kita dapat melihat bahwa pada dataset ini terdapat 3 kolom.
 
+* Data memiliki 990 baris dan 3 kolom
 * semua kolom memiliki tipe data int64 yaitu: user_id, cellphone_id, dan rating.
 
 Penjelasan tiap kolom:
