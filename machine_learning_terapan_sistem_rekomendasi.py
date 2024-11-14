@@ -105,6 +105,12 @@ Penjelasan tiap kolom:
 * ```release date:``` Tanggal rilis ponsel.
 """
 
+#mengecek missing value
+data.isnull().sum()
+
+#mengecek data duplicate
+data.duplicated().sum()
+
 #menampilkan 5 data dari dataset users
 users.head()
 
@@ -122,6 +128,14 @@ Penjelasan tiap kolom:
 * ```occupation:``` Pekerjaan pengguna.
 """
 
+#mengecek missing value
+users.isnull().sum()
+
+"""Terdapat 1 missing value pada kolom occupation"""
+
+#mengecek data duplicate
+users.duplicated().sum()
+
 #menampilkan 5 data dari dataset rating
 rating.head()
 
@@ -135,8 +149,15 @@ Penjelasan tiap kolom:
 * ```user_id:``` ID unik untuk setiap pengguna.
 * ```cellphone_id:``` ID unik untuk setiap ponsel (mengacu pada cellphones_data).
 * ```rating:``` Rating yang diberikan pengguna untuk ponsel tertentu (skala 1-10).
+"""
 
-**Dataset Data**
+#menampilkan missing value
+rating.isnull().sum()
+
+#menampilkan duplicate data
+rating.duplicated().sum()
+
+"""**Dataset Data**
 
 ---
 
@@ -365,6 +386,10 @@ print(len(operating_system))
 
 """Membuat dictionary untuk menentukan pasangan key-value pada data cellphone_id, brand, model, dan operating system.
 
+Parameter yang digunakan:
+* TF-IDF Vectorizer: Untuk mengubah deskripsi teks menjadi vektor numerik.
+* Cosine Similarity: Untuk menghitung kesamaan antara vektor item.
+
 TF-IDF hanya cocok untuk data teks maka hanya kolom yang bertipe object saja yang dipilih.
 """
 
@@ -479,6 +504,25 @@ model_recommendations('Moto G Play (2021)')
 
 #Menampilkan hasil rekomendasi
 model_recommendations('X80 Pro')
+
+# Contoh ponsel yang direkomendasikan untuk Phone A
+recommended_phones = model_recommendations("Moto G Play (2021)")
+# Convert the 'model' column of the DataFrame to a list
+recommended_phone_list = recommended_phones["model"].tolist()
+print("Rekomendasi untuk Moto G Play (2021):", recommended_phone_list)
+
+# Daftar ponsel yang relevan (misalnya ponsel dengan merek yang sama dengan X80 Pro)
+# Assuming 'data' is your DataFrame and 'model' is the column with phone models
+# Accessing the brand column: data[data['model'] == 'X80 Pro']['brand'].iloc[0]
+relevant_phones = data[data["brand"] == data[data["model"] == "Moto G Play (2021)"]["brand"].iloc[0]]["model"].tolist()
+
+# Hitung precision
+relevant_and_recommended = [phone for phone in recommended_phone_list if phone in relevant_phones]
+precision = len(relevant_and_recommended) / len(recommended_phone_list) if len(recommended_phone_list) > 0 else 0
+
+print("Daftar ponsel relevan:", relevant_phones)
+print("Ponsel yang direkomendasikan:", recommended_phone_list)
+print("Precision:", precision)
 
 """# **Model Development dengan Collaborative Filtering**
 

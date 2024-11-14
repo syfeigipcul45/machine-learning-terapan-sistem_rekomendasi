@@ -86,6 +86,8 @@ Penjelasan tiap kolom:
 * ```price:``` Harga ponsel dalam USD.
 * ```release date:``` Tanggal rilis ponsel.
 
+Dataset data tidak memiliki missing value dan duplicate data.
+
 Menampilkan 5 data dari dataset users
 
 ```users.head()```
@@ -108,6 +110,8 @@ Penjelasan tiap kolom:
 * ```gender:``` Jenis kelamin pengguna.
 * ```occupation:``` Pekerjaan pengguna.
 
+Dataset users memiliki 1 missing value pada kolom occupation dan tidak ada duplicate data.
+
 Menampilkan 5 data dari dataset rating
 
 ```rating.head()```
@@ -127,6 +131,8 @@ Penjelasan tiap kolom:
 * ```user_id:``` ID unik untuk setiap pengguna.
 * ```cellphone_id:``` ID unik untuk setiap ponsel (mengacu pada cellphones_data).
 * ```rating:``` Rating yang diberikan pengguna untuk ponsel tertentu (skala 1-10).
+
+Dataset rating tidak memiliki missing value dan duplicate data.
 
 **Dataset Data**
 
@@ -217,7 +223,10 @@ Data Preparation adalah tahap untuk mempersiapkan data sebelum masuk ke tahap pe
 5. Value pada kolom ```occupation``` dibuat menjadi lowercase
 6. Terdapat beberapa penulisan yang salah pada kolom ```occupation```. Value 'Healthare' menjadi 'healthcare' dan value 'it' menjadi 'information technology'.
 7. Membuang data duplikat pada kolom ```cellphone_id```
-8. Membuat dictionary untuk menentukan pasangan key-value pada data cellphone_id, brand, model, dan operating system. TF-IDF hanya cocok untuk data teks maka hanya kolom yang bertipe object saja yang dipilih.
+8. Parameter yang digunakan:
+    * TF-IDF Vectorizer: Untuk mengubah deskripsi teks menjadi vektor numerik.
+    * Cosine Similarity: Untuk menghitung kesamaan antara vektor item.
+9. Membuat dictionary untuk menentukan pasangan key-value pada data cellphone_id, brand, model, dan operating system. TF-IDF hanya cocok untuk data teks maka hanya kolom yang bertipe object saja yang dipilih.
 ```python
 phone_new = pd.DataFrame({
     'cellphone_id': cellphone_id,
@@ -228,6 +237,7 @@ phone_new = pd.DataFrame({
 
 phone_new.head()
 ```
+10. Membagi data Training dan Validasi sebesar 80:20 
 ![cellphone](assets/phone_new.png)
 
 **Alasan Tahapan Data Preparation***
@@ -245,27 +255,32 @@ Pada tahap ini menggunakan dua pendekatan yaitu Content-Based Filtering dan Coll
 data = phone_new
 data.head()
 ```
-Membangun sistem rekomendasi dengan menggunakan ```TfidfVectorizer()```.
-```python 
-#Melakukan perhitungan idf pada data brand
-tf.fit(data['brand'])
-```
-Selanjutnya, lakukan fit dan transformasi ke dalam bentuk matriks.
-```python
-# Melakukan fit lalu ditransformasikan ke bentuk matrix
-tfidf_matrix = tf.fit_transform(data['brand'])
+* Membangun sistem rekomendasi dengan menggunakan ```TfidfVectorizer()```.
+    ```python 
+    #Melakukan perhitungan idf pada data brand
+    tf.fit(data['brand'])
+    ```
+* Selanjutnya, lakukan fit dan transformasi ke dalam bentuk matriks.
+    ```python
+    # Melakukan fit lalu ditransformasikan ke bentuk matrix
+    tfidf_matrix = tf.fit_transform(data['brand'])
 
-# Melihat ukuran matrix tfidf
-tfidf_matrix.shape
-```
-Matriks memiliki ukuran (33, 10). Nilai 33 merupakan ukuran data dan 10 merupakan matrik kategori brand.
+    # Melihat ukuran matrix tfidf
+    tfidf_matrix.shape
+    ```
+* Matriks memiliki ukuran (33, 10). Nilai 33 merupakan ukuran data dan 10 merupakan matrik kategori brand.
 
-Menghitung derajat kesamaan (similarity degree) dengan teknik cosine similarity.
-```python
-# Menghitung cosine similarity pada matrix tf-idf
-cosine_sim = cosine_similarity(tfidf_matrix)
-cosine_sim
-```
+* Menghitung derajat kesamaan (similarity degree) dengan teknik cosine similarity.
+    ```python
+    # Menghitung cosine similarity pada matrix tf-idf
+    cosine_sim = cosine_similarity(tfidf_matrix)
+    cosine_sim
+    ```
+Tahapan kerja model:
+
+Content-Based Filtering merupakan metode rekomendasi yang memberikan rekomendasi berdasarkan kesamaan antara konten atau fitur item dengan preferensi atau riwayat aktivitas pengguna.
+Fitur-fitur ini diubah ke dalam bentuk vektor untuk kemudahan analisis dengan menggunakan metode TF-IDF Vectorizer.
+Content-based filtering bekerja dengan menghitung kesamaan antara profil pengguna dan konten item yang ada dengan menggunakan cosine similarity.
 
 **Membuat Rekomendasi**
 
@@ -338,35 +353,42 @@ class RecommenderNet(tf.keras.Model):
     - batch_size = 8
     - epochs = 100
 
+Tahapan kerja model:
+
+Collaborative Filtering menggunakan interaksi pengguna-item (rating) untuk memberikan rekomendasi. 
+Algoritma ini bekerja dengan cara memprediksi rating item yang belum diulas pengguna berdasarkan rating item yang mirip oleh pengguna lain. 
+Model ini mempelajari pola preferensi pengguna dari data rating yang ada dan menggunakan pola tersebut untuk merekomendasikan item yang mungkin disukai pengguna.
+
 Menampilkan hasil rekomendasi pada user 128:
 
 ```python
-Showing recommendations for users: 128
+Showing recommendations for users: 154
 ===========================
 cellphone with high ratings from user
 --------------------------------
-Vivo : X80 Pro
 Samsung : Galaxy A32
 Apple : iPhone 13 Pro Max
-Samsung : Galaxy Z Fold 3
-Xiaomi : Redmi Note 11
+Xiaomi : Poco F4
+Samsung : Galaxy S22 Plus
+Asus : Zenfone 8
 --------------------------------
 Top 10 cellphone recommendation
 --------------------------------
 Apple : iPhone XR
 Samsung : Galaxy S22
+Vivo : X80 Pro
 Oppo : Find X5 Pro
 Apple : iPhone 13 Pro
 Apple : iPhone 13 Mini
-Xiaomi : 11T Pro
-OnePlus : 10 Pro
 Apple : iPhone SE (2022)
 Google : Pixel 6 Pro 
+Samsung : Galaxy S22 Ultra
 Apple : iPhone 13
 ```
 
 ## Evaluation
-Metrik evaluasi yang digunakan pada model ini adalah Root Mean Squared Error (RMSE) yang menghitung akar kuadrat dari rata-rata kuadrat kesalahan. Ini memberikan gambaran seberapa jauh prediksi model berbeda dari nilai sebenarnya dalam satuan yang sama dengan variabel yang diprediksi.
+Metrik evaluasi yang digunakan pada model ini adalah:
+* Root Mean Squared Error (RMSE) yang menghitung akar kuadrat dari rata-rata kuadrat kesalahan. Ini memberikan gambaran seberapa jauh prediksi model berbeda dari nilai sebenarnya dalam satuan yang sama dengan variabel yang diprediksi.
 
 ![rmse](assets/rmse.png)
 
@@ -382,8 +404,23 @@ Hasil RMSE
 
 |            | Train | Test  |
 |------------|-------|-------|
-| RMSE       |0.2013|0.2793|
+| RMSE       |0.2024|0.2839|
 
 RMSE yang dihitung memberikan indikasi bahwa model prediksi rating memiliki tingkat kesalahan yang dapat diterima, sehingga memadai untuk tujuan rekomendasi.
+
+* Precision Content-Based Filtering: metrik precision digunakan untuk mengevaluasi kualitas rekomendasi dengan mengukur proporsi item yang direkomendasikan dan relevan terhadap seluruh item yang direkomendasikan. Precision berfokus pada seberapa akurat model dalam merekomendasikan item yang benar-benar relevan bagi pengguna.
+
+Perhitungan Precision Content-Based Filtering:
+
+![precision](assets/precision.png)
+
+```python
+Rekomendasi untuk Moto G Play (2021): ['Moto G Power (2022)', 'Moto G Pure', 'Moto G Stylus (2022)', 'Xperia Pro', 'Nord N20']
+Daftar ponsel relevan: ['Moto G Play (2021)', 'Moto G Pure', 'Moto G Power (2022)', 'Moto G Stylus (2022)']
+Ponsel yang direkomendasikan: ['Moto G Power (2022)', 'Moto G Pure', 'Moto G Stylus (2022)', 'Xperia Pro', 'Nord N20']
+Precision: 0.6
+```
+
+
 
 
