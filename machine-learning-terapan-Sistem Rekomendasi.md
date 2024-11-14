@@ -206,6 +206,7 @@ Data Preparation adalah tahap untuk mempersiapkan data sebelum masuk ke tahap pe
 
 1. Menggabungkan dataset data, users, rating menjadi satu.
     ![cellphone](assets/cellphone.png)
+    
     Hasil output diatas merupakan hasil dari penggabungan dataset data, rating, dan user.
 2. Melakukan pengecekan missing value pada dataset Terdapat 10 missing value pada kolom ```occupation```
 3. Menghapus data yang memiliki nilai outliers pada kolom ```rating``` yang memiliki value 18.
@@ -383,7 +384,3 @@ Hasil RMSE
 RMSE yang dihitung memberikan indikasi bahwa model prediksi rating memiliki tingkat kesalahan yang dapat diterima, sehingga memadai untuk tujuan rekomendasi.
 
 
-Ingatlah, metrik evaluasi yang digunakan harus sesuai dengan konteks data, problem statement, dan solusi yang diinginkan.
-
-**Rubrik/Kriteria Tambahan (Opsional)**: 
-- Menjelaskan formula metrik dan bagaimana metrik tersebut bekerja.
